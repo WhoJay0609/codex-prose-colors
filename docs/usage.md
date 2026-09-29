@@ -1,0 +1,60 @@
+# 使用指南
+
+## 启动与恢复
+
+本工具针对 macOS 上 `/Applications/ChatGPT.app` 的桌面应用。需要 Node.js 22 或更新版本；`theme.mjs` 使用该版本提供的全局 `fetch`、`WebSocket` 和 `AbortSignal.timeout`。它通过 `open` 启动应用，以 CDP 连接本机 `127.0.0.1` 调试端口，并在助手消息中注入 `opencode-prose.css`。
+
+首次启用时，在 Mac 上完全退出 ChatGPT，然后双击 `activate.command`。也可在终端从仓库目录运行：
+
+```sh
+node theme.mjs start
+```
+
+脚本启动应用和后台注入进程；后台进程每两秒重新应用样式，以覆盖新页面。若 `28493` 端口冲突，可通过 `CODEX_PROSE_PORT` 指定 1024–65535 之间的端口。调试服务绑定到 `127.0.0.1`。
+
+恢复时双击 `restore.command`，或运行：
+
+```sh
+node theme.mjs stop
+```
+
+停止命令会终止后台注入进程并尝试从当前页面移除样式。如果调试页面未连接，正常重启 ChatGPT 会移除注入的样式。
+
+其他命令：
+
+```sh
+node theme.mjs once    # 对当前页面注入一次
+node theme.mjs status  # 查看调试页面
+```
+
+`activate-background.sh` 会向激活脚本提供回车，以跳过等待用户按 Return 的提示；样式注入由 `theme.mjs start` 启动的 watcher 在后台持续执行。此启动器和 `.command` 文件需要可用的 `zsh`，并使用 zsh 路径展开语法。
+
+## 文件与调色
+
+| 路径 | 用途 |
+| --- | --- |
+| `theme.mjs` | 启动应用、连接本机 CDP 并注入样式 |
+| `opencode-prose.css` | 配色变量和助手消息选择器 |
+| `activate.command`、`activate-background.sh` | macOS 启动器 |
+| `restore.command` | 停止注入并恢复当前页面 |
+| `docs/` | 截图和使用文档 |
+
+要调整颜色，编辑 `opencode-prose.css` 中对应明暗主题的 CSS 变量；媒体查询和显式主题规则也有变量定义，需同步调整对应值。运行中的 watcher 会重新读取 CSS。实际显示还取决于应用的主题和页面结构。
+
+## 已知限制
+
+- 这是 macOS 桌面应用工具；脚本固定使用 `/Applications/ChatGPT.app`、`open` 和本机 CDP，不适用于浏览器中的 ChatGPT，也没有 Windows 或 Linux 桌面支持。
+- 远程 Linux 上运行的 agent 不会因此获得此配色。需要在运行桌面应用的本机 Mac 上安装并启动工具。
+- 注入范围依赖应用页面中的 `data-markdown-text-style="assistant-message"` 标记和 DOM 结构。应用更新可能改变这些结构或 CDP 行为。
+- README 截图仅展示深色主题中的部分样式；实际文字颜色取决于主题变量和应用渲染结构。
+
+## 贡献与验证
+
+`node --check theme.mjs` 只检查 JavaScript 语法，不会验证 CSS 或实际注入。实际效果需要在安装了 ChatGPT 的 macOS 桌面环境检查；当前仓库没有声明测试命令。提交问题时请附上 macOS 版本、ChatGPT 版本、Node.js 版本、运行的命令以及可复现步骤。仓库目前没有声明许可证。
+
+## 故障排查
+
+- 启动器提示先退出 ChatGPT：完全退出应用后重试，不能只关闭窗口。
+- 提示找不到 Node.js：安装 Node.js 22 或更新版本，并确认 `node` 可从终端运行。
+- 提示未打开 CDP endpoint：确认 ChatGPT 已退出后重新运行 `node theme.mjs start`；若问题持续，检查端口 `28493` 是否被占用，或设置 `CODEX_PROSE_PORT` 后重试。
+- 命令成功但回复没有配色：查看 `node theme.mjs once` 输出中的 `assistantMessages`。若为 `0`，当前页面没有匹配到助手消息标记；应用更新可能改变页面结构。可重启 ChatGPT 再试。
