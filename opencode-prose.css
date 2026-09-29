@@ -1,0 +1,73 @@
+/* OpenCode Markdown palette, scoped to Codex assistant messages. */
+[data-markdown-text-style="assistant-message"] {
+  --oc-prose: #eeeeee;
+  --oc-heading: #9d7cd8;
+  --oc-strong: #f5a742;
+  --oc-emphasis: #e5c07b;
+  --oc-link: #56b6c2;
+  --oc-code: #7fd88f;
+  --oc-list: #fab283;
+  color: var(--oc-prose) !important;
+}
+
+@media (prefers-color-scheme: light) {
+  [data-markdown-text-style="assistant-message"] {
+    --oc-prose: #1a1a1a;
+    --oc-heading: #d68c27;
+    --oc-strong: #d68c27;
+    --oc-emphasis: #b0851f;
+    --oc-link: #318795;
+    --oc-code: #3d9a57;
+    --oc-list: #3b7dd8;
+  }
+}
+
+html.dark [data-markdown-text-style="assistant-message"],
+html[data-theme="dark"] [data-markdown-text-style="assistant-message"] {
+  --oc-prose: #eeeeee;
+  --oc-heading: #9d7cd8;
+  --oc-strong: #f5a742;
+  --oc-emphasis: #e5c07b;
+  --oc-link: #56b6c2;
+  --oc-code: #7fd88f;
+  --oc-list: #fab283;
+}
+
+html.light [data-markdown-text-style="assistant-message"],
+html[data-theme="light"] [data-markdown-text-style="assistant-message"] {
+  --oc-prose: #1a1a1a;
+  --oc-heading: #d68c27;
+  --oc-strong: #d68c27;
+  --oc-emphasis: #b0851f;
+  --oc-link: #318795;
+  --oc-code: #3d9a57;
+  --oc-list: #3b7dd8;
+}
+
+[data-markdown-text-style="assistant-message"] :is(p, li, td) {
+  color: var(--oc-prose) !important;
+}
+
+[data-markdown-text-style="assistant-message"] :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--oc-heading) !important;
+}
+
+[data-markdown-text-style="assistant-message"] strong {
+  color: var(--oc-strong) !important;
+}
+
+[data-markdown-text-style="assistant-message"] :is(em, blockquote) {
+  color: var(--oc-emphasis) !important;
+}
+
+[data-markdown-text-style="assistant-message"] a {
+  color: var(--oc-link) !important;
+}
+
+[data-markdown-text-style="assistant-message"] :not(pre) > code {
+  color: var(--oc-code) !important;
+}
+
+[data-markdown-text-style="assistant-message"] li::marker {
+  color: var(--oc-list) !important;
+}
