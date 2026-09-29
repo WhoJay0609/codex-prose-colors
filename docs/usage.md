@@ -10,7 +10,13 @@
 node theme.mjs start
 ```
 
-脚本启动应用和后台注入进程；后台进程每两秒重新应用样式，以覆盖新页面。若 `28493` 端口冲突，可通过 `CODEX_PROSE_PORT` 指定 1024–65535 之间的端口。调试服务绑定到 `127.0.0.1`。
+脚本启动应用和后台注入进程；后台进程每两秒重新应用样式，以覆盖新页面。若 `28493` 端口冲突，可通过 `CODEX_PROSE_PORT` 指定 1024–65535 之间的端口。调试服务绑定到 `127.0.0.1`。如果使用自定义端口，对 `start`、`status`、`once` 和 `stop` 的每次调用都要设置同一个 `CODEX_PROSE_PORT`，例如：
+
+```sh
+CODEX_PROSE_PORT=28500 node theme.mjs start
+CODEX_PROSE_PORT=28500 node theme.mjs status
+CODEX_PROSE_PORT=28500 node theme.mjs stop
+```
 
 恢复时双击 `restore.command`，或运行：
 
@@ -18,7 +24,7 @@ node theme.mjs start
 node theme.mjs stop
 ```
 
-停止命令会终止后台注入进程并尝试从当前页面移除样式。如果调试页面未连接，正常重启 ChatGPT 会移除注入的样式。
+停止命令会终止后台注入进程并尝试从当前页面移除样式，但不会关闭 ChatGPT 的调试端口。要关闭调试端口（包括运行 `stop` 之后），请完全退出 ChatGPT，再正常重新打开应用；如果停止时调试页面未连接，这也会移除遗留注入样式。
 
 其他命令：
 
@@ -28,6 +34,8 @@ node theme.mjs status  # 查看调试页面
 ```
 
 `activate-background.sh` 会向激活脚本提供回车，以跳过等待用户按 Return 的提示；样式注入由 `theme.mjs start` 启动的 watcher 在后台持续执行。此启动器和 `.command` 文件需要可用的 `zsh`，并使用 zsh 路径展开语法。
+
+首次成功时，`start` 输出 JSON，其中 `status` 为 `started`，`targets` 列出连接到的页面及注入结果。`roots` 是找到并添加样式的文档根数量。若 `assistantMessages` 为 `0`，只表示该页面的普通 DOM 中没有匹配标记；当前对话可能没有助手消息、目标可能是其他页面，或消息可能在 shadow root 中，因此该数值本身不是注入失败的证据。
 
 ## 文件与调色
 
@@ -50,11 +58,11 @@ node theme.mjs status  # 查看调试页面
 
 ## 贡献与验证
 
-`node --check theme.mjs` 只检查 JavaScript 语法，不会验证 CSS 或实际注入。实际效果需要在安装了 ChatGPT 的 macOS 桌面环境检查；当前仓库没有声明测试命令。提交问题时请附上 macOS 版本、ChatGPT 版本、Node.js 版本、运行的命令以及可复现步骤。仓库目前没有声明许可证。
+`node --check theme.mjs` 只检查 JavaScript 语法，不会验证 CSS 或实际注入。已在 Node.js 22.22.0 的 Linux 环境运行，退出码为 0、无输出；本轮未在 macOS 上复测启动和注入，README 截图为用户提供的运行效果。当前仓库没有声明自动化测试命令。提交问题时请附上 macOS 版本、ChatGPT 版本、Node.js 版本、运行的命令以及可复现步骤。仓库目前没有声明许可证。
 
 ## 故障排查
 
 - 启动器提示先退出 ChatGPT：完全退出应用后重试，不能只关闭窗口。
 - 提示找不到 Node.js：安装 Node.js 22 或更新版本，并确认 `node` 可从终端运行。
 - 提示未打开 CDP endpoint：确认 ChatGPT 已退出后重新运行 `node theme.mjs start`；若问题持续，检查端口 `28493` 是否被占用，或设置 `CODEX_PROSE_PORT` 后重试。
-- 命令成功但回复没有配色：查看 `node theme.mjs once` 输出中的 `assistantMessages`。若为 `0`，当前页面没有匹配到助手消息标记；应用更新可能改变页面结构。可重启 ChatGPT 再试。
+- 命令成功但回复没有配色：查看 `node theme.mjs once` 输出中的 `targets` 和 `roots`。`assistantMessages: 0` 可能表示当前页面没有已显示的助手消息、连到了其他页面，或消息位于 shadow root；单凭此数值不能判断失败。确认目标页面后再检查配色，必要时正常重启 ChatGPT。
