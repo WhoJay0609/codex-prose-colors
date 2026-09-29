@@ -4,9 +4,13 @@
   --oc-heading: #9d7cd8;
   --oc-strong: #f5a742;
   --oc-emphasis: #e5c07b;
+  --oc-quote-text: #b8b8b8;
   --oc-link: #56b6c2;
   --oc-code: #7fd88f;
+  --oc-code-block: #eeeeee;
   --oc-list: #fab283;
+  --oc-list-number: #56b6c2;
+  --oc-muted: #808080;
   color: var(--oc-prose) !important;
 }
 
@@ -16,9 +20,13 @@
     --oc-heading: #d68c27;
     --oc-strong: #d68c27;
     --oc-emphasis: #b0851f;
+    --oc-quote-text: #666666;
     --oc-link: #318795;
     --oc-code: #3d9a57;
+    --oc-code-block: #1a1a1a;
     --oc-list: #3b7dd8;
+    --oc-list-number: #318795;
+    --oc-muted: #8a8a8a;
   }
 }
 
@@ -28,9 +36,13 @@ html[data-theme="dark"] [data-markdown-text-style="assistant-message"] {
   --oc-heading: #9d7cd8;
   --oc-strong: #f5a742;
   --oc-emphasis: #e5c07b;
+  --oc-quote-text: #b8b8b8;
   --oc-link: #56b6c2;
   --oc-code: #7fd88f;
+  --oc-code-block: #eeeeee;
   --oc-list: #fab283;
+  --oc-list-number: #56b6c2;
+  --oc-muted: #808080;
 }
 
 html.light [data-markdown-text-style="assistant-message"],
@@ -39,9 +51,13 @@ html[data-theme="light"] [data-markdown-text-style="assistant-message"] {
   --oc-heading: #d68c27;
   --oc-strong: #d68c27;
   --oc-emphasis: #b0851f;
+  --oc-quote-text: #666666;
   --oc-link: #318795;
   --oc-code: #3d9a57;
+  --oc-code-block: #1a1a1a;
   --oc-list: #3b7dd8;
+  --oc-list-number: #318795;
+  --oc-muted: #8a8a8a;
 }
 
 [data-markdown-text-style="assistant-message"] :is(p, li, td) {
@@ -50,24 +66,55 @@ html[data-theme="light"] [data-markdown-text-style="assistant-message"] {
 
 [data-markdown-text-style="assistant-message"] :is(h1, h2, h3, h4, h5, h6) {
   color: var(--oc-heading) !important;
+  font-weight: 700 !important;
+}
+
+[data-markdown-text-style="assistant-message"] h1 {
+  text-decoration: underline !important;
 }
 
 [data-markdown-text-style="assistant-message"] strong {
   color: var(--oc-strong) !important;
+  font-weight: 700 !important;
 }
 
-[data-markdown-text-style="assistant-message"] :is(em, blockquote) {
+[data-markdown-text-style="assistant-message"] em {
   color: var(--oc-emphasis) !important;
+  font-style: italic !important;
+}
+
+[data-markdown-text-style="assistant-message"] blockquote {
+  color: var(--oc-quote-text) !important;
+  font-style: italic !important;
+  border-inline-start: 2px solid var(--oc-emphasis) !important;
+  padding-inline-start: 0.5rem;
+}
+
+[data-markdown-text-style="assistant-message"] blockquote :is(p, li, td) {
+  color: inherit !important;
 }
 
 [data-markdown-text-style="assistant-message"] a {
   color: var(--oc-link) !important;
+  text-decoration: underline !important;
 }
 
-[data-markdown-text-style="assistant-message"] :not(pre) > code {
+[data-markdown-text-style="assistant-message"] code {
+  color: var(--oc-code-block) !important;
+}
+
+[data-markdown-text-style="assistant-message"] :is(:not(pre) > code, [data-markdown-copy="inline-code"]) {
   color: var(--oc-code) !important;
 }
 
-[data-markdown-text-style="assistant-message"] li::marker {
+[data-markdown-text-style="assistant-message"] ul > li::marker {
   color: var(--oc-list) !important;
+}
+
+[data-markdown-text-style="assistant-message"] ol > li::marker {
+  color: var(--oc-list-number) !important;
+}
+
+[data-markdown-text-style="assistant-message"] hr {
+  border-color: var(--oc-muted) !important;
 }
